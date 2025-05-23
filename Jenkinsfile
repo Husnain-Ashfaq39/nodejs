@@ -14,6 +14,24 @@ pipeline {
             }
         }
         
+        stage('Setup Docker') {
+            steps {
+                script {
+                    sh '''
+                    if ! [ -x "$(command -v docker)" ]; then
+                      echo 'Docker not found, installing...'
+                      curl -fsSL https://get.docker.com -o get-docker.sh
+                      sh get-docker.sh
+                      sudo usermod -aG docker jenkins
+                      echo 'Docker installed successfully'
+                    else
+                      echo 'Docker already installed'
+                    fi
+                    '''
+                }
+            }
+        }
+        
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG .'
